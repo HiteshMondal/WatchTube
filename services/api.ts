@@ -16,8 +16,10 @@ export const fetchMovies = async ({query} : {query: string}) => {
         headers: TMDB_CONFIG.Headers
     })
     if (!response.ok) {
-        throw new Error(`Failed to fetch movies: ${response.statusText}`)
-    }
+        const err = await response.text();
+        throw new Error(`Failed to fetch movies (${response.status}): ${err}`);
+      }
+      
     const data = await response.json()
 
     return data.results
