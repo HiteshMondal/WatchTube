@@ -4,16 +4,18 @@ import { icons } from '@/constants/icons';
 import { images } from '@/constants/images';
 import { fetchMovies } from '@/services/api';
 import useFetch from '@/services/useFetch';
-import { useRouter } from 'expo-router';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native';
 
 const Search = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const fetchMoviesByQuery = useCallback(() => fetchMovies({ query: searchQuery }), [searchQuery]);
+  const { data: movies, loading: loadingMovies, error: errorMovies } = useFetch(fetchMoviesByQuery);
 
-  const router = useRouter();
-  const fetchPopularMovies = useCallback(() => fetchMovies({ query: '' }), []);
-  const { data: movies, loading: loadingMovies, error: errorMovies } = useFetch(fetchPopularMovies);
-
+  const handleSearch = (text: string) => {
+    setSearchQuery(text);
+  };
+  
   return (
     <View className='flex-1 bg-primary'>
       <Image source={images.bg} className='absolute size-full z-0 resizeMode=cover' />
@@ -29,8 +31,8 @@ const Search = () => {
             <View className='w-full flex-row items-center justify-between mt-24'>
               <Image source={icons.logo} className='w-12 h-10' />
             </View>
-            <View>
-              <SearchBar placeholder='Search for movies!' />
+            <View className="my-5">
+              <SearchBar placeholder='Search Here!' value={searchQuery} onChangeText={handleSearch}/>
             </View>
             {loadingMovies && (
               <ActivityIndicator size='large' color={'#ab8bff'} className='my-10'/>
@@ -38,6 +40,15 @@ const Search = () => {
             {errorMovies && (
               <Text className='text-red-500 px-5'>Error: {errorMovies}</Text>
             )}
+            {!loadingMovies &&
+              !errorMovies &&
+              searchQuery.trim() &&
+              movies?.length! > 0 && (
+                <Text className="text-xl text-white font-bold">
+                  Search Results for{" "}
+                  <Text className="text-accent">{searchQuery}</Text>
+                </Text>
+              )}
           </>
         }
       />
