@@ -1,15 +1,18 @@
+import MovieCard from "@/components/MovieCard";
 import SearchBar from "@/components/SearchBar";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { fetchMovies } from "@/services/api";
 import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
+import { useCallback } from "react";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const router = useRouter();
-  const { data: movies, loading: loadingMovies, error: errorMovies } = useFetch(() => fetchMovies({ query: '' }));
+  const fetchPopularMovies = useCallback(() => fetchMovies({ query: '' }), []);
+  const { data: movies, loading: loadingMovies, error: errorMovies } = useFetch(fetchPopularMovies);
 
   const renderHeader = () => (
     <View className="px-5">
@@ -33,16 +36,18 @@ export default function Index() {
       ) : errorMovies ? (
         <Text className="text-red-500 px-5">Error: {errorMovies}</Text>
       ) : (
-        <FlatList
+        <FlatList className="mt-3 pb-10"
           data={movies}
           keyExtractor={(item) => item.id.toString()}
+          numColumns={2}
+          columnWrapperStyle={{ justifyContent: "flex-start", gap: 20, paddingRight: 5, marginBottom: 20 }}         
           ListHeaderComponent={renderHeader}
           renderItem={({ item }) => (
-            <View className="px-5 py-2">
-              <Text className="text-white">{item.title}</Text>
-            </View>
+            <MovieCard 
+              {...item}
+            />
           )}
-          contentContainerStyle={{ paddingBottom: 50 }}
+          contentContainerStyle={{ paddingBottom: 50, paddingLeft: 20 }}
           showsVerticalScrollIndicator={false}
         />
       )}
