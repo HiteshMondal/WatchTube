@@ -3,19 +3,41 @@ import SearchBar from '@/components/SearchBar';
 import { icons } from '@/constants/icons';
 import { images } from '@/constants/images';
 import { fetchMovies } from '@/services/api';
+import { updateSearchCount } from "@/services/appwrite";
 import useFetch from '@/services/useFetch';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native';
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const fetchMoviesByQuery = useCallback(() => fetchMovies({ query: searchQuery }), [searchQuery]);
-  const { data: movies, loading: loadingMovies, error: errorMovies } = useFetch(fetchMoviesByQuery);
+  const { data, loading: loadingMovies, error: errorMovies, refetch: loadMovies, reset } = useFetch(fetchMoviesByQuery);
+  const movies = data ?? [];
+
 
   const handleSearch = (text: string) => {
     setSearchQuery(text);
   };
   
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.trim()) {
+        loadMovies();
+      } else {
+        reset();
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  // Trigger search count update after data is loaded
+  useEffect(() => {
+    if (searchQuery.trim() && movies.length > 0) {
+      updateSearchCount(searchQuery, movies[0]);
+    }
+  }, [movies]);
+
   return (
     <View className='flex-1 bg-primary'>
       <Image source={images.bg} className='absolute size-full z-0 resizeMode=cover' />
