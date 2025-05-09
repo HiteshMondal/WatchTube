@@ -1,11 +1,11 @@
 import { icons } from "@/constants/icons";
+import { useSaved } from "@/context/SavedContext";
 import { fetchMovieDetails } from "@/services/api";
 import useFetch from "@/services/useFetch";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 interface MovieInfoProps {
   label: string;
   value?: string | number | null;
@@ -31,11 +31,24 @@ const Details = () => {
         <Text className="text-white">Invalid Movie ID</Text>
       </SafeAreaView>
     );
-  }
+  } 
 
   const fetchMovie = useCallback(() => fetchMovieDetails(id), [id]);
   const { data: movie, loading, error } = useFetch(fetchMovie);
+  const { savedMovies, addToSaved, removeFromSaved } = useSaved();
+  const isSaved = movie && savedMovies.some((m) => m.id === movie.id);
+  
+  useEffect(() => {
+    if (movie && movie.id && !isSaved) {
+      const movieWithFallback = {
+        ...movie,
+        poster_path: movie.poster_path ?? "https://default-image-url.com",
+      };
+      addToSaved(movieWithFallback);
+    }
+  }, [movie]);
 
+ 
   if (loading) {
     return (
       <SafeAreaView className="bg-primary flex-1 justify-center items-center">
@@ -108,9 +121,44 @@ const Details = () => {
               value={movie?.revenue ? `$${movie.revenue.toLocaleString()}` : "N/A"}
             />
           </View>
-
           <MovieInfo label="Production Companies" value={movie?.production_companies?.map((c) => c.name).join(" • ") || "N/A"} />
         </View>
+        
+        <View className="flex-col items-start justify-center mt-5 px-5">
+        <Text className="text-white font-bold text-xl">{movie?.title}</Text>
+
+        <View className="flex-row items-center gap-x-1 mt-2">
+          <Text className="text-light-200 text-sm">
+            {movie?.release_date ? new Date(movie.release_date).getFullYear() : "N/A"} •
+          </Text>
+          <Text className="text-light-200 text-sm">{movie?.runtime}m</Text>
+        </View>
+
+        <View className="flex-row items-center bg-dark-100 px-2 py-1 rounded-md gap-x-1 mt-2">
+          <Image source={icons.star} className="size-4" />
+          <Text className="text-white font-bold text-sm">
+            {Math.round(movie?.vote_average ?? 0)}/10
+          </Text>
+          <Text className="text-light-200 text-sm">({movie?.vote_count} votes)</Text>
+        </View>
+
+        <TouchableOpacity
+          className="mt-4 bg-accent rounded-lg py-3 px-4 flex items-center justify-center self-stretch"
+          onPress={() => {
+            if (movie) {
+              const movieWithFallback = {
+                ...movie,
+                poster_path: movie.poster_path ?? "https://default-image-url.com",
+              };
+              isSaved ? removeFromSaved(movie.id) : addToSaved(movieWithFallback);
+            }
+          }}
+        >
+          <Text className="text-white font-semibold text-base">
+            {isSaved ? "Remove from Saved" : "Save Movie"}
+          </Text>
+        </TouchableOpacity>
+      </View>
       </ScrollView>
 
       <TouchableOpacity
