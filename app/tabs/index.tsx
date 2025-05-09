@@ -44,7 +44,7 @@ const Index =() => {
           <View className="flex-1 mt-5">
             <SearchBar
               placeholder="Search for a movie"
-              onPress={() => router.push("/search")}
+              onPress={() => router.push({ pathname: "/tabs/search" })}
               value=""
               onChangeText={() => {}}
             />

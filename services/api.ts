@@ -23,17 +23,13 @@ export const TMDB_CONFIG = {
     return data.results;
   };
 
-  export const fetchMovieDetails = async (
-    movieId: string
-  ): Promise<MovieDetails> => {
+  export const fetchMovieDetails = async (movieId: string): Promise<MovieDetails> => {
     try {
-      const response = await fetch(
-        `${TMDB_CONFIG.BASE_URL}/movie/${movieId}`,
-        {
-          method: "GET",
-          headers: TMDB_CONFIG.Headers,
-        }
-      );
+      const endpoint = `${TMDB_CONFIG.BASE_URL}/movie/${movieId}?api_key=${process.env.EXPO_PUBLIC_MOVIE_ACCESS_TOKEN}`;
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: TMDB_CONFIG.Headers,
+      });
   
       if (!response.ok) {
         throw new Error(`Failed to fetch movie details: ${response.statusText}`);
@@ -41,11 +37,13 @@ export const TMDB_CONFIG = {
   
       const data = await response.json();
       return data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching movie details:", error);
-      throw error;
+      // You can throw more specific error information here if needed
+      throw new Error(error.message || "An error occurred while fetching movie details");
     }
   };
+  
   
   
   

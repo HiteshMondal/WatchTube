@@ -37,18 +37,23 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
   }
 };
 
-export const getTrendingMovies = async (): Promise<
-  TrendingMovie[] | undefined
-> => {
+export const getTrendingMovies = async (): Promise<TrendingMovie[]> => {
   try {
     const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
       Query.limit(5),
       Query.orderDesc("count"),
     ]);
-
-    return result.documents as unknown as TrendingMovie[];
+    console.log("TRENDING DOCS", result.documents);
+    return result.documents.map((doc) => ({
+      movie_id: doc.movie_id,
+      title: doc.title,
+      poster_url: doc.poster_url,
+      searchTerm: doc.searchTerm,
+      count: doc.count,
+    }));
+    
   } catch (error) {
-    console.error(error);
-    return undefined;
+    console.error("Error fetching trending movies:", error);
+    return [];
   }
 };

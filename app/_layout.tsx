@@ -4,7 +4,7 @@ import './globals.css';
 export default function RootLayout() {
   return <Stack>
     <Stack.Screen 
-      name="(tabs)"     
+      name="tabs"     
       options={{ headerShown: false }}
     />
     <Stack.Screen 

@@ -32,9 +32,7 @@ const Details = () => {
     );
   }
 
-  const { data: movie, loading } = useFetch(() =>
-    fetchMovieDetails(id)
-  );
+  const { data: movie, loading } = useFetch(() => fetchMovieDetails(id));
 
   if (loading) {
     return (
@@ -43,6 +41,14 @@ const Details = () => {
       </SafeAreaView>
     );
   }
+  if (movie) {
+    console.log("Movie Data:", movie);
+  }
+  
+  if (Error) {
+    console.error("Error fetching movie details:", Error);
+  }
+
 
   return (
     <View className="bg-primary flex-1">
