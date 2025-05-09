@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true) => {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null); // 👈 change here
 
   const fetchData = useCallback(async () => {
     try {
@@ -11,8 +11,9 @@ const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true) => {
       const result = await fetchFunction();
       setData(result);
       setError(null);
-    } catch (error) {
-      setError((error as Error).message);
+    } catch (err) {
+      console.error("useFetch error:", err); // helpful log
+      setError(err instanceof Error ? err : new Error("Unknown error")); // 👈 this ensures type safety
     } finally {
       setLoading(false);
     }
@@ -30,7 +31,6 @@ const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true) => {
   }, [autoFetch, fetchData]);
 
   return { data, loading, error, fetchData, reset, refetch: fetchData };
-
 };
 
 export default useFetch;

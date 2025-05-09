@@ -2,7 +2,8 @@ import { icons } from "@/constants/icons";
 import { fetchMovieDetails } from "@/services/api";
 import useFetch from "@/services/useFetch";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View, } from "react-native";
+import { useCallback } from "react";
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface MovieInfoProps {
@@ -32,7 +33,8 @@ const Details = () => {
     );
   }
 
-  const { data: movie, loading } = useFetch(() => fetchMovieDetails(id));
+  const fetchMovie = useCallback(() => fetchMovieDetails(id), [id]);
+  const { data: movie, loading, error } = useFetch(fetchMovie);
 
   if (loading) {
     return (
@@ -41,14 +43,15 @@ const Details = () => {
       </SafeAreaView>
     );
   }
-  if (movie) {
-    console.log("Movie Data:", movie);
-  }
-  
-  if (Error) {
-    console.error("Error fetching movie details:", Error);
-  }
 
+  if (error) {
+    console.error("Error fetching movie details:", error);
+    return (
+      <SafeAreaView className="bg-primary flex-1 justify-center items-center">
+        <Text className="text-white">Failed to load movie details.</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <View className="bg-primary flex-1">
@@ -65,7 +68,7 @@ const Details = () => {
           />
 
           <TouchableOpacity className="absolute bottom-5 right-5 rounded-full size-14 bg-white flex items-center justify-center">
-            <Image source={icons.play} className="w-6 h-7 ml-1" resizeMode="stretch"/>
+            <Image source={icons.play} className="w-6 h-7 ml-1" resizeMode="stretch" />
           </TouchableOpacity>
         </View>
 
@@ -93,33 +96,28 @@ const Details = () => {
           </View>
 
           <MovieInfo label="Overview" value={movie?.overview} />
-          <MovieInfo label="Genres" value={movie?.genres?.map((g) => g.name).join(" • ") || "N/A"}/>
+          <MovieInfo label="Genres" value={movie?.genres?.map((g) => g.name).join(" • ") || "N/A"} />
 
           <View className="flex flex-row justify-between w-1/2">
-            <MovieInfo label="Budget" value={
-                movie?.budget
-                  ? `$${movie.budget.toLocaleString()}`
-                  : "N/A"
-              }
+            <MovieInfo
+              label="Budget"
+              value={movie?.budget ? `$${movie.budget.toLocaleString()}` : "N/A"}
             />
-            <MovieInfo label="Revenue" value={
-                movie?.revenue
-                  ? `$${movie.revenue.toLocaleString()}`
-                  : "N/A"
-              }
+            <MovieInfo
+              label="Revenue"
+              value={movie?.revenue ? `$${movie.revenue.toLocaleString()}` : "N/A"}
             />
           </View>
 
-          <MovieInfo label="Production Companies" value={
-              movie?.production_companies?.map((c) => c.name).join(" • ") ||
-              "N/A"
-            }
-          />
+          <MovieInfo label="Production Companies" value={movie?.production_companies?.map((c) => c.name).join(" • ") || "N/A"} />
         </View>
       </ScrollView>
 
-      <TouchableOpacity className="absolute bottom-5 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50" onPress={router.back}>
-        <Image source={icons.arrow} className="size-5 mr-1 mt-0.5 rotate-180" tintColor="#fff"/>
+      <TouchableOpacity
+        className="absolute bottom-5 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50"
+        onPress={router.back}
+      >
+        <Image source={icons.arrow} className="size-5 mr-1 mt-0.5 rotate-180" tintColor="#fff" />
         <Text className="text-white font-semibold text-base">Go Back</Text>
       </TouchableOpacity>
     </View>
