@@ -15,17 +15,18 @@ const SignIn = () => {
       Alert.alert("Error", "Please enter both email and password.");
       return;
     }
-
+  
     setLoading(true);
     try {
       await account.createSession(email, password);
-      router.replace("/tabs"); // redirect to tabs after login
+      router.replace("/tabs");
     } catch (error: any) {
       Alert.alert("Login failed", error.message || "Unknown error");
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <View className="flex-1 justify-center items-center px-5 bg-primary">
