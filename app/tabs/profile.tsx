@@ -1,5 +1,5 @@
 import { images } from "@/constants/images";
-import { account } from "@/lib/appwrite"; // adjust the path if different
+import { account } from "@/services/appwrite";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Image, Text, TouchableOpacity, View } from "react-native";
@@ -16,7 +16,7 @@ const Profile = () => {
       })
       .catch((err) => {
         console.error("User fetch failed", err);
-        router.replace("/sign-in"); // redirect to sign-in if not logged in
+        router.replace("/sign-in");
       })
       .finally(() => setLoading(false));
   }, []);
@@ -41,9 +41,14 @@ const Profile = () => {
   return (
     <View className="flex-1 bg-primary items-center justify-center px-5">
       <Image
-        source={{ uri: user?.prefs?.avatar || images.avatar }}
+        source={
+          user?.prefs?.avatar
+            ? { uri: user.prefs.avatar }
+            : images.avatar // this is a local require, which is fine as-is
+        }
         className="w-24 h-24 rounded-full mb-4"
       />
+
       <Text className="text-white text-xl font-bold">{user.name}</Text>
       <Text className="text-white text-sm mb-6">{user.email}</Text>
 

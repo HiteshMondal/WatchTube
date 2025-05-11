@@ -6,5 +6,5 @@ export const images = {
   bg,
   highlight,
   rankingGradient,
-  avatar: require("../assets/icons/Profile_avatar.png"),
+  avatar: require("../assets/icons/profile.png"),
 };
