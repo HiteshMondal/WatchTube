@@ -1,4 +1,5 @@
 import { icons } from "@/constants/icons";
+import { useRef } from "react";
 import { Image, TextInput, TextInputProps, View } from "react-native";
 
 interface Props extends TextInputProps {
@@ -9,6 +10,18 @@ interface Props extends TextInputProps {
 }
 
 const SearchBar = ({ placeholder, value, onChangeText, onPress, ...rest }: Props) => {
+  const inputRef = useRef<TextInput | null>(null);
+
+  const handlePress = () => {
+    // Focus the TextInput on press
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+    if (onPress) {
+      onPress(); // Execute any additional onPress action
+    }
+  };
+
   return (
     <View className="flex-row items-center bg-dark-200 rounded-full px-5 py-4">
       <Image
@@ -18,7 +31,8 @@ const SearchBar = ({ placeholder, value, onChangeText, onPress, ...rest }: Props
         tintColor="#AB8BFF"
       />
       <TextInput
-        onPressIn={onPress}
+        ref={inputRef}
+        onPressIn={handlePress}  // Ensure it focuses on press
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}

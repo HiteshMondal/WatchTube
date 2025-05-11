@@ -9,34 +9,38 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native';
 
 const Search = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const fetchMoviesByQuery = useCallback(() => fetchMovies({ query: searchQuery }), [searchQuery]);
   const { data, loading: loadingMovies, error: errorMovies, refetch: loadMovies, reset } = useFetch(fetchMoviesByQuery);
   const movies = data ?? [];
 
   const debounceRef = useRef<number | null>(null);
 
+  // Handle input changes
   const handleSearch = (text: string) => {
     setSearchQuery(text);
   };
 
   useEffect(() => {
+    // Clear previous debounce timeout
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
+    // Set a new debounce timeout for search query
     debounceRef.current = setTimeout(() => {
       if (searchQuery.trim()) {
-        loadMovies();
+        loadMovies(); 
       } else {
-        reset();
+        reset(); 
       }
-    }, 500);
+    }, 10000); 
 
     return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (debounceRef.current) clearTimeout(debounceRef.current); // Clean up the timeout when component is unmounted or query changes
     };
-  }, [searchQuery, loadMovies, reset]);
+  }, [searchQuery, loadMovies, reset]); // Only rerun when searchQuery changes
 
   useEffect(() => {
+    // Update search count after fetching movies
     if (searchQuery.trim() && movies.length > 0) {
       updateSearchCount(searchQuery, movies[0]);
     }
