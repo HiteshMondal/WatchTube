@@ -6,7 +6,7 @@ import { fetchMovies } from '@/services/api';
 import { updateSearchCount } from "@/services/appwrite";
 import useFetch from '@/services/useFetch';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Keyboard, KeyboardAvoidingView, Platform, Text, TouchableWithoutFeedback, View } from 'react-native';
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,14 +25,14 @@ const Search = () => {
     // Clear previous debounce timeout
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    // Set a new debounce timeout for search query
+    // Set a new debounce timeout for search query (1000ms)
     debounceRef.current = setTimeout(() => {
       if (searchQuery.trim()) {
-        loadMovies(); 
+        loadMovies(); // Trigger search API
       } else {
-        reset(); 
+        reset(); // Reset results if query is empty
       }
-    }, 10000); 
+    }, 1000); // 1000ms debounce delay
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current); // Clean up the timeout when component is unmounted or query changes
@@ -47,52 +47,59 @@ const Search = () => {
   }, [movies, searchQuery]);
 
   return (
-    <View className='flex-1 bg-primary'>
-      <Image source={images.bg} className='absolute size-full z-0 resizeMode=cover' />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+    >
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View className='flex-1 bg-primary'>
+          <Image source={images.bg} className='absolute size-full z-0 resizeMode=cover' />
 
-      <FlatList
-        data={movies}
-        renderItem={({ item }) => <MovieCard {...item} />}
-        keyExtractor={(item) => item.id.toString()}
-        className='mt-3 pb-10'
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: 'space-between' }}
-        contentContainerStyle={{ paddingHorizontal: 20 }}
-        keyboardShouldPersistTaps="handled"
-        ListHeaderComponent={React.memo(() => (
-          <>
-            <View className='w-full flex-row items-center justify-between mt-24'>
-              <Image source={icons.logo} className='w-12 h-10' />
-            </View>
-            <View className="my-5">
-              <SearchBar
-                placeholder='Search Here!'
-                value={searchQuery}
-                onChangeText={handleSearch}
-              />
-            </View>
-            {loadingMovies && (
-              <ActivityIndicator size='large' color={'#ab8bff'} className='my-10' />
-            )}
-            {errorMovies && (
-              <Text className='text-red-500 px-5'>Error</Text>
-            )}
-            {!loadingMovies && !errorMovies && searchQuery.trim() && movies.length > 0 && (
-              <Text className="text-xl text-white font-bold">
-                Search Results for{" "}
-                <Text className="text-accent">{searchQuery}</Text>
-              </Text>
-            )}
-          </>
-        ))}
-      />
+          <FlatList
+            data={movies}
+            renderItem={({ item }) => <MovieCard {...item} />}
+            keyExtractor={(item) => item.id.toString()}
+            className='mt-3 pb-10'
+            numColumns={2}
+            columnWrapperStyle={{ justifyContent: 'space-between' }}
+            contentContainerStyle={{ paddingHorizontal: 20 }}
+            keyboardShouldPersistTaps="handled"
+            ListHeaderComponent={React.memo(() => (
+              <>
+                <View className='w-full flex-row items-center justify-between mt-24'>
+                  <Image source={icons.logo} className='w-12 h-10' />
+                </View>
+                <View className="my-5">
+                  <SearchBar
+                    placeholder='Search Here!'
+                    value={searchQuery}
+                    onChangeText={handleSearch}
+                  />
+                </View>
+                {loadingMovies && (
+                  <ActivityIndicator size='large' color={'#ab8bff'} className='my-10' />
+                )}
+                {errorMovies && (
+                  <Text className='text-red-500 px-5'>Error</Text>
+                )}
+                {!loadingMovies && !errorMovies && searchQuery.trim() && movies.length > 0 && (
+                  <Text className="text-xl text-white font-bold">
+                    Search Results for{" "}
+                    <Text className="text-accent">{searchQuery}</Text>
+                  </Text>
+                )}
+              </>
+            ))}
+          />
 
-      {!loadingMovies && !errorMovies && searchQuery.trim() && movies.length === 0 && (
-        <View className="flex-1 justify-center items-center mt-10">
-          <Text className="text-white">No movies found for "{searchQuery}"</Text>
+          {!loadingMovies && !errorMovies && searchQuery.trim() && movies.length === 0 && (
+            <View className="flex-1 justify-center items-center mt-10">
+              <Text className="text-white">No movies found for "{searchQuery}"</Text>
+            </View>
+          )}
         </View>
-      )}
-    </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
