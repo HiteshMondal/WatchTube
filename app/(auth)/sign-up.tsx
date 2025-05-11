@@ -1,29 +1,15 @@
 import { account } from "@/services/appwrite";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-const SignIn = () => {
+const SignUp = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Check if a user is already signed in when the component mounts
-  useEffect(() => {
-    account.getSession("current")
-      .then((session) => {
-        if (session) {
-          // Redirect to profile if already signed in
-          router.replace("/tabs/profile");
-        }
-      })
-      .catch(() => {
-        // If no session, stay on sign-in screen
-      });
-  }, []);
-
-  const handleSignIn = async () => {
+  const handleSignUp = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Please enter both email and password.");
       return;
@@ -31,10 +17,11 @@ const SignIn = () => {
 
     setLoading(true);
     try {
-      await account.createSession(email, password);
-      router.replace("/tabs/profile");
+      await account.create("unique()", email, password);
+      Alert.alert("Success", "Account created successfully.");
+      router.replace("/sign-in"); // Redirect to sign-in after successful signup
     } catch (error: any) {
-      Alert.alert("Login failed", error.message || "Unknown error");
+      Alert.alert("Sign Up failed", error.message || "Unknown error");
     } finally {
       setLoading(false);
     }
@@ -42,7 +29,7 @@ const SignIn = () => {
 
   return (
     <View className="flex-1 justify-center items-center px-5 bg-primary">
-      <Text className="text-white text-2xl font-bold mb-6">Sign In</Text>
+      <Text className="text-white text-2xl font-bold mb-6">Sign Up</Text>
 
       <TextInput
         className="w-full bg-dark-200 text-white px-4 py-3 rounded-lg mb-4"
@@ -65,20 +52,20 @@ const SignIn = () => {
 
       <TouchableOpacity
         className="bg-accent px-6 py-3 rounded-xl w-full"
-        onPress={handleSignIn}
+        onPress={handleSignUp}
         disabled={loading}
       >
         <Text className="text-center text-white font-semibold text-base">
-          {loading ? "Signing In..." : "Sign In"}
+          {loading ? "Signing Up..." : "Sign Up"}
         </Text>
       </TouchableOpacity>
 
-      {/* Sign-Up Button/Link */}
+      {/* Sign-In Button/Link */}
       <View className="mt-4">
         <Text className="text-white">
-          Don't have an account?{" "}
-          <TouchableOpacity onPress={() => router.replace("/sign-up")}>
-            <Text className="text-accent font-semibold">Sign Up</Text>
+          Already have an account?{" "}
+          <TouchableOpacity onPress={() => router.replace("/sign-in")}>
+            <Text className="text-accent font-semibold">Sign In</Text>
           </TouchableOpacity>
         </Text>
       </View>
@@ -86,4 +73,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;

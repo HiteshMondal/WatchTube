@@ -1,8 +1,7 @@
-import { images } from "@/constants/images";
 import { account } from "@/services/appwrite";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Image, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, Text, View } from "react-native";
 
 const Profile = () => {
   const router = useRouter();
@@ -10,25 +9,28 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    account.get()
-      .then((res) => {
-        setUser(res);
-      })
-      .catch((err) => {
-        console.error("User fetch failed", err);
+    // Check if the user is logged in by fetching the current session
+    account.getSession("current").then((session) => {
+      if (session) {
+        // If a session exists, fetch user info
+        account.get()
+          .then((res) => {
+            setUser(res);
+          })
+          .catch((err) => {
+            console.error("User fetch failed", err);
+            router.replace("/sign-in"); // Redirect to sign-in if the user session is invalid
+          })
+          .finally(() => setLoading(false));
+      } else {
+        // If no session exists, redirect to the sign-in page
         router.replace("/sign-in");
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await account.deleteSession("current");
+      }
+    }).catch(() => {
+      // In case fetching session fails, redirect to sign-in
       router.replace("/sign-in");
-    } catch (err) {
-      console.error("Logout failed", err);
-    }
-  };
+    });
+  }, []);
 
   if (loading) {
     return (
@@ -41,23 +43,11 @@ const Profile = () => {
   return (
     <View className="flex-1 bg-primary items-center justify-center px-5">
       <Image
-        source={
-          user?.prefs?.avatar
-            ? { uri: user.prefs.avatar }
-            : images.avatar // this is a local require, which is fine as-is
-        }
+        source={{ uri: user?.prefs?.avatar || 'default-avatar-url' }}
         className="w-24 h-24 rounded-full mb-4"
       />
-
       <Text className="text-white text-xl font-bold">{user.name}</Text>
       <Text className="text-white text-sm mb-6">{user.email}</Text>
-
-      <TouchableOpacity
-        onPress={handleLogout}
-        className="bg-red-500 px-6 py-3 rounded-xl"
-      >
-        <Text className="text-white font-semibold">Logout</Text>
-      </TouchableOpacity>
     </View>
   );
 };
