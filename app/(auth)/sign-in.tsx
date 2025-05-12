@@ -1,27 +1,39 @@
 import { account } from "@/services/appwrite";
+import { signInWithOAuth } from "@/services/authWithOAuth";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
+
 
 const SignIn = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithOAuth("google");
+      if (result.type === "success") {
+        router.replace("/tabs");
+      }
+    } catch (err) {
+      Alert.alert("Google login failed");
+    }
+  };
 
   // Check if a user is already signed in when the component mounts
   useEffect(() => {
     account.getSession("current")
       .then((session) => {
-        if (session) {
-          // Redirect to profile if already signed in
+        if (session?.userId) {
           router.replace("/tabs/profile");
         }
       })
-      .catch(() => {
-        // If no session, stay on sign-in screen
+      .catch((err) => {
+        console.log("No active session", err.message);
       });
   }, []);
+  
 
   const handleSignIn = async () => {
     if (!email || !password) {
@@ -82,6 +94,12 @@ const SignIn = () => {
           </TouchableOpacity>
         </Text>
       </View>
+      <TouchableOpacity
+        onPress={handleGoogleSignIn}
+        className="bg-white mb-4 p-3 rounded-xl w-full"
+      >
+        <Text className="text-center text-black font-semibold">Sign in with Google</Text>
+      </TouchableOpacity>
     </View>
   );
 };

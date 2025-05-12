@@ -1,4 +1,6 @@
 import { account } from "@/services/appwrite";
+import { signInWithOAuth } from "@/services/authWithOAuth";
+import { ID } from "appwrite";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -17,13 +19,24 @@ const SignUp = () => {
 
     setLoading(true);
     try {
-      await account.create("unique()", email, password);
+      await account.create(ID.unique(), email, password);
       Alert.alert("Success", "Account created successfully.");
-      router.replace("/sign-in"); // Redirect to sign-in after successful signup
+      router.replace("/sign-in"); // Go to sign-in after successful signup
     } catch (error: any) {
       Alert.alert("Sign Up failed", error.message || "Unknown error");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    try {
+      const result = await signInWithOAuth("google");
+      if (result.type === "success") {
+        router.replace("/tabs");
+      }
+    } catch (err) {
+      Alert.alert("Google login failed");
     }
   };
 
@@ -60,7 +73,13 @@ const SignUp = () => {
         </Text>
       </TouchableOpacity>
 
-      {/* Sign-In Button/Link */}
+      <TouchableOpacity
+        onPress={handleGoogleSignUp}
+        className="bg-white mb-4 p-3 rounded-xl w-full mt-4"
+      >
+        <Text className="text-center text-black font-semibold">Sign up with Google</Text>
+      </TouchableOpacity>
+
       <View className="mt-4">
         <Text className="text-white">
           Already have an account?{" "}
