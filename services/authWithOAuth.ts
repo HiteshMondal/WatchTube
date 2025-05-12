@@ -8,7 +8,7 @@ WebBrowser.maybeCompleteAuthSession();
 export const signInWithOAuth = async (provider: "google") => {
     const redirectUri = makeRedirectUri({
         native: "watchtube://auth",
-      });
+      });      
      console.log("Redirect URI:", redirectUri);
        
   const authUrl =
