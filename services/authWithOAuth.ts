@@ -1,23 +1,23 @@
-// services/authWithOAuth.ts
-import { makeRedirectUri } from "expo-auth-session";
-import * as WebBrowser from "expo-web-browser";
-import { client } from "./appwrite";
+import * as Google from "expo-auth-session/providers/google";
+import { auth } from "./firebaseConfig";
+const { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithCredential } = require("firebase/auth");
 
-WebBrowser.maybeCompleteAuthSession();
 
 export const signInWithOAuth = async (provider: "google") => {
-    const redirectUri = makeRedirectUri({
-        native: "watchtube://auth",
-      });      
-     console.log("Redirect URI:", redirectUri);
-       
-  const authUrl =
-  `${client.config.endpoint}/account/sessions/oauth2` +
-  `?provider=${provider}&project=${client.config.project}` +
-  `&success=${encodeURIComponent(redirectUri)}` +
-  `&failure=${encodeURIComponent(redirectUri)}`;
+  if (provider === "google") {
+    const [request, response, promptAsync] = Google.useAuthRequest({
+      clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_EXPO,
+    });
 
-  const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
+    if (response?.type === "success") {
+      const { id_token } = response.params;
+      const credential = GoogleAuthProvider.credential(id_token);
+      await signInWithCredential(auth, credential);
+      return { type: "success", user: auth.currentUser };
+    } else {
+      return { type: "error", message: "Google sign-in failed." };
+    }
+  }
 
-  return result;
+  return { type: "error", message: "Unsupported provider" };
 };

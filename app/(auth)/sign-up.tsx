@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-const SignUp = () => {
+export default function SignUp  () {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,9 +19,10 @@ const SignUp = () => {
 
     setLoading(true);
     try {
+      // Create an account with Appwrite
       await account.create(ID.unique(), email, password);
       Alert.alert("Success", "Account created successfully.");
-      router.replace("/sign-in"); // Go to sign-in after successful signup
+      router.replace("/sign-in"); // Navigate to sign-in after successful signup
     } catch (error: any) {
       Alert.alert("Sign Up failed", error.message || "Unknown error");
     } finally {
@@ -29,13 +30,24 @@ const SignUp = () => {
     }
   };
 
-  const handleGoogleSignUp = async () => {
+  const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithOAuth("google");
       if (result.type === "success") {
-        router.replace("/tabs");
+        try {
+          // After successful OAuth, fetch the session info
+          const session = await account.get(); 
+          console.log("OAuth session created:", session);
+          router.replace("/tabs"); // Navigate to the main screen after successful OAuth login
+        } catch (err) {
+          console.error("Session fetch failed:", err);
+          Alert.alert("OAuth login failed", "Could not fetch user session.");
+        }
+      } else {
+        Alert.alert("Google Sign-In failed", "OAuth result was not successful.");
       }
     } catch (err) {
+      console.error("Google login error:", err);
       Alert.alert("Google login failed");
     }
   };
@@ -74,7 +86,7 @@ const SignUp = () => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={handleGoogleSignUp}
+        onPress={handleGoogleSignIn}
         className="bg-white mb-4 p-3 rounded-xl w-full mt-4"
       >
         <Text className="text-center text-black font-semibold">Sign up with Google</Text>
@@ -92,4 +104,3 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;

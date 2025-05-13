@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "435710481975",
+    "project_id": "watchtube-605fb",
+    "storage_bucket": "watchtube-605fb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:435710481975:android:9b13bec813a9c4da9851b2",
+        "android_client_info": {
+          "package_name": "com.hitesh.watchtube"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "435710481975-7lad77t0dp3qpo3nqubgshjo3rofjglt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO_hQKyv1Q_3xmJziCAeYQI20pJVgiur4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "435710481975-7lad77t0dp3qpo3nqubgshjo3rofjglt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

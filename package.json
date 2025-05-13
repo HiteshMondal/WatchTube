@@ -12,14 +12,18 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
+    "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
     "appwrite": "^17.0.2",
     "expo": "~53.0.7",
+    "expo-auth-session": "~6.1.5",
     "expo-blur": "~14.1.4",
-    "expo-constants": "~17.1.5",
+    "expo-constants": "~17.1.6",
+    "expo-firebase-auth": "^2.0.0",
+    "expo-firebase-core": "^3.1.0",
     "expo-font": "~13.3.1",
     "expo-haptics": "~14.1.4",
     "expo-image": "~2.1.6",
@@ -30,6 +34,7 @@
     "expo-symbols": "~0.4.4",
     "expo-system-ui": "~5.0.7",
     "expo-web-browser": "~14.1.6",
+    "firebase": "^11.7.1",
     "nativewind": "^4.1.23",
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -42,14 +47,14 @@
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
     "tailwindcss": "^3.4.17",
-    "expo-auth-session": "~6.1.5"
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~9.2.0",
-    "typescript": "~5.8.3"
+    "typescript": "^5.8.3"
   },
   "private": true
 }
