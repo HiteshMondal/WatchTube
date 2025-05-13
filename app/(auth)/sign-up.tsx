@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-export default function SignUp  () {
+export default function SignUp() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,10 +19,9 @@ export default function SignUp  () {
 
     setLoading(true);
     try {
-      // Create an account with Appwrite
       await account.create(ID.unique(), email, password);
       Alert.alert("Success", "Account created successfully.");
-      router.replace("/sign-in"); // Navigate to sign-in after successful signup
+      router.replace("/(auth)/sign-in");
     } catch (error: any) {
       Alert.alert("Sign Up failed", error.message || "Unknown error");
     } finally {
@@ -35,10 +34,9 @@ export default function SignUp  () {
       const result = await signInWithOAuth("google");
       if (result.type === "success") {
         try {
-          // After successful OAuth, fetch the session info
-          const session = await account.get(); 
+          const session = await account.get();
           console.log("OAuth session created:", session);
-          router.replace("/tabs"); // Navigate to the main screen after successful OAuth login
+          router.replace("/tabs");
         } catch (err) {
           console.error("Session fetch failed:", err);
           Alert.alert("OAuth login failed", "Could not fetch user session.");
@@ -95,12 +93,11 @@ export default function SignUp  () {
       <View className="mt-4">
         <Text className="text-white">
           Already have an account?{" "}
-          <TouchableOpacity onPress={() => router.replace("/sign-in")}>
+          <TouchableOpacity onPress={() => router.replace("/(auth)/sign-in")}>
             <Text className="text-accent font-semibold">Sign In</Text>
           </TouchableOpacity>
         </Text>
       </View>
     </View>
   );
-};
-
+}

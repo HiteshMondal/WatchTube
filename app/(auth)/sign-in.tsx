@@ -1,7 +1,7 @@
-import { auth } from "@/services/firebaseConfig"; // Import the auth instance
+import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
-const { getAuth, signInWithEmailAndPassword } = require("firebase/auth");
+import { auth } from "services/firebaseConfig"; // Ensure you have initialized Firebase and exported `auth`
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -18,7 +18,6 @@ export default function SignIn() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("User signed in:", userCredential.user);
-      // Navigate to the desired page, e.g., the profile page
     } catch (error: any) {
       Alert.alert("Login failed", error.message);
     } finally {
@@ -44,5 +43,4 @@ export default function SignIn() {
       </TouchableOpacity>
     </View>
   );
-};
-
+}
