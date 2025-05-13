@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-export default function SignUp() {
+const SignUp = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +21,7 @@ export default function SignUp() {
     try {
       await account.create(ID.unique(), email, password);
       Alert.alert("Success", "Account created successfully.");
-      router.replace("/(auth)/sign-in");
+      router.replace("/sign-in"); // Go to sign-in after successful signup
     } catch (error: any) {
       Alert.alert("Sign Up failed", error.message || "Unknown error");
     } finally {
@@ -29,23 +29,13 @@ export default function SignUp() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignUp = async () => {
     try {
       const result = await signInWithOAuth("google");
       if (result.type === "success") {
-        try {
-          const session = await account.get();
-          console.log("OAuth session created:", session);
-          router.replace("/tabs");
-        } catch (err) {
-          console.error("Session fetch failed:", err);
-          Alert.alert("OAuth login failed", "Could not fetch user session.");
-        }
-      } else {
-        Alert.alert("Google Sign-In failed", "OAuth result was not successful.");
+        router.replace("/tabs");
       }
     } catch (err) {
-      console.error("Google login error:", err);
       Alert.alert("Google login failed");
     }
   };
@@ -84,7 +74,7 @@ export default function SignUp() {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={handleGoogleSignIn}
+        onPress={handleGoogleSignUp}
         className="bg-white mb-4 p-3 rounded-xl w-full mt-4"
       >
         <Text className="text-center text-black font-semibold">Sign up with Google</Text>
@@ -93,11 +83,13 @@ export default function SignUp() {
       <View className="mt-4">
         <Text className="text-white">
           Already have an account?{" "}
-          <TouchableOpacity onPress={() => router.replace("/(auth)/sign-in")}>
+          <TouchableOpacity onPress={() => router.replace("/sign-in")}>
             <Text className="text-accent font-semibold">Sign In</Text>
           </TouchableOpacity>
         </Text>
       </View>
     </View>
   );
-}
+};
+
+export default SignUp;

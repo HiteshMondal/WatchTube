@@ -19,16 +19,16 @@ const Profile = () => {
           })
           .catch((err) => {
             console.error("User fetch failed", err);
-            router.replace("/(auth)/sign-in"); // Redirect to sign-in if the user session is invalid
+            router.replace("/sign-in"); // Redirect to sign-in if the user session is invalid
           })
           .finally(() => setLoading(false));
       } else {
         // If no session exists, redirect to the sign-in page
-        router.replace("/(auth)/sign-in");
+        router.replace("/sign-in");
       }
     }).catch(() => {
       // In case fetching session fails, redirect to sign-in
-      router.replace("/(auth)/sign-in");
+      router.replace("/sign-in");
     });
   }, []);
 
