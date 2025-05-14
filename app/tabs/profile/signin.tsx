@@ -1,5 +1,4 @@
-// app/tabs/profile/SignIn.tsx
-import { signInWithEmailAndPassword } from "@/services/authWithOAuth"; // Firebase sign-in method
+import { signInWithEmailAndPassword } from "@/services/authWithOAuth";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Button, Text, TextInput, View } from "react-native";
@@ -37,7 +36,7 @@ const SignIn = () => {
       />
       <Button title="Sign In" onPress={handleSignIn} />
       <Text
-        onPress={() => router.push("../profile/signup")}
+        onPress={() => router.push("/tabs/profile/signup")}
         className="text-blue-500 text-center mt-4"
       >
         Don't have an account? Sign up
@@ -46,4 +45,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignIn;  // Ensure this default export

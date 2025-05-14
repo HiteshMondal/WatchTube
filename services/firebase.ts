@@ -1,7 +1,6 @@
+// services/firebase.ts
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "your-api-key",
@@ -12,16 +11,9 @@ const firebaseConfig = {
   appId: "your-app-id",
 };
 
-// Initialize Firebase
+// Initialize Firebase only once in the app
 const app = initializeApp(firebaseConfig);
 
 // Firebase Auth
-export const auth = getAuth(app);
-
-// Firestore
-export const db = getFirestore(app);
-
-// Firebase Storage
-export const storage = getStorage(app);
-
+export const auth = getAuth(app); // Export as named export
 export default app;

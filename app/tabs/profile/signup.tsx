@@ -1,5 +1,4 @@
-import { createUserWithEmailAndPassword } from "@/services/authWithOAuth"; // Using Firebase/Appwrite for auth
-import { auth } from "@/services/firebase";
+import { signUpWithEmailAndPassword } from "@/services/authWithOAuth";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Button, Text, TextInput, View } from "react-native";
@@ -11,8 +10,8 @@ const SignUp = () => {
 
   const handleSignUp = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      router.push("/tabs/profile");  // Redirect to profile page after successful sign-up
+      await signUpWithEmailAndPassword(email, password);
+      router.push("/tabs/profile/signin");
     } catch (error) {
       Alert.alert("Sign-Up Error");
     }
@@ -37,7 +36,7 @@ const SignUp = () => {
       />
       <Button title="Sign Up" onPress={handleSignUp} />
       <Text
-        onPress={() => router.push("../profile/signin")}
+        onPress={() => router.push("/tabs/profile/signin")}
         className="text-blue-500 text-center mt-4"
       >
         Already have an account? Sign in
@@ -46,4 +45,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignUp;  // Ensure this default export
