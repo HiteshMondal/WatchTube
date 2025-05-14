@@ -1,5 +1,5 @@
 export const TMDB_CONFIG = {
-    BASE_URL: 'https://api.themoviedb.org/3', // Yes, still v3 path for most endpoints
+    BASE_URL: 'https://api.themoviedb.org/3', 
     Headers: {
       accept: 'application/json',
       Authorization: `Bearer ${process.env.EXPO_PUBLIC_MOVIE_ACCESS_TOKEN}`,

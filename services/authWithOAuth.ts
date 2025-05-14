@@ -1,22 +1,46 @@
-import { makeRedirectUri } from "expo-auth-session";
-import * as WebBrowser from "expo-web-browser";
-import { client } from "./appwrite";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword as firebaseSignIn,
+  signOut as firebaseSignOut,
+  onAuthStateChanged
+} from "firebase/auth";
+import { auth } from "./firebase";
 
-WebBrowser.maybeCompleteAuthSession();
-
-export const signInWithOAuth = async (provider: "google") => {
-    const redirectUri = makeRedirectUri({
-        native: "watchtube://auth",
-      });      
-     console.log("Redirect URI:", redirectUri);
-       
-  const authUrl =
-  `${client.config.endpoint}/account/sessions/oauth2` +
-  `?provider=${provider}&project=${client.config.project}` +
-  `&success=${encodeURIComponent(redirectUri)}` +
-  `&failure=${encodeURIComponent(redirectUri)}`;
-
-  const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
-
-  return result;
+export const signUpWithEmailAndPassword = async (email: string, password: string) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    return userCredential.user;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 };
+
+export const signInWithEmailAndPassword = async (email: string, password: string) => {
+  try {
+    const userCredential = await firebaseSignIn(auth, email, password);
+    return userCredential.user;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
+export const signOut = async () => {
+  try {
+    await firebaseSignOut(auth);
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
+export const getCurrentUser = () => {
+  return new Promise<any>((resolve) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
+};
+
+
+export { createUserWithEmailAndPassword };
+
