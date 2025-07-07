@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"       # Expo
+      - "19000:19000"     # Metro bundler
+      - "19001:19001"     # WebSocket
+      - "19002:19002"     # DevTools
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+    stdin_open: true
+    tty: true
+
+  appwrite:
+    image: appwrite/appwrite:1.5
+    container_name: appwrite
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      _APP_ENV: development
+      _APP_OPENSSL_KEY_V1: "your-secure-key"
+      _APP_WORKER_PER_CORE: 1
+    volumes:
+      - appwrite_data:/storage
+      - appwrite_certificates:/certificates
+
+volumes:
+  appwrite_data:
+  appwrite_certificates:
+
