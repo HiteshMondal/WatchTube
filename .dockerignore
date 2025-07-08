@@ -1,9 +1,7 @@
 node_modules
 .expo
 .vscode
+.git
 *.log
+*.md
 .env
-*.tsbuildinfo
-npm-debug.*
-yarn-debug.*
-yarn-error.*

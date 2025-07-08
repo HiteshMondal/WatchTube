@@ -1,31 +1,32 @@
-# Use Node LTS base image
-FROM node:20-bullseye
+# 🧱 Stage 1: Base build using slim image
+FROM node:20-slim AS base
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install essential deps only (no JDK, no watchman unless needed)
 RUN apt-get update && apt-get install -y \
-  watchman \
   git \
   curl \
   python3 \
   build-essential \
-  openjdk-17-jdk \
-  && rm -rf /var/lib/apt/lists/*
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install expo CLI globally
+# Install expo CLI + ngrok globally
 RUN npm install -g expo-cli @expo/ngrok
 
-# Copy only dependency files first for layer caching
+# Copy only package.json and lock for dependency layer
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
-# Copy the rest of the app
+# Copy rest of the app
 COPY . .
 
-# Expose port used by Expo
-EXPOSE 8081
+# Optional: Remove unused dev deps
+RUN npm prune --omit=dev
 
-# Default command
+# Expose required ports (Expo + Metro)
+EXPOSE 8081 19000 19001 19002
+
+# Start Expo in tunnel mode
 CMD ["npx", "expo", "start", "--tunnel"]
