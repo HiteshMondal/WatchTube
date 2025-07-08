@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/*
 
 # Install expo CLI globally
-RUN npm install -g expo-cli
+RUN npm install -g expo-cli @expo/ngrok
 
 # Copy only dependency files first for layer caching
 COPY package*.json ./
