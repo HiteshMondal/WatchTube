@@ -37,3 +37,4 @@ volumes:
   appwrite_data:
   appwrite_certificates:
 
+  
