@@ -4,38 +4,14 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
     ports:
-      - "8081:8081"     # Expo
-      - "19000:19000"   # Metro bundler
-      - "19001:19001"   # WebSocket
-      - "19002:19002"   # DevTools
+      - "8081:8081"
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
     volumes:
-      - .:/app:cached   # Use :cached for macOS performance (optional)
-      - /app/node_modules
+      - .:/app:cached
     environment:
       EXPO_DEVTOOLS_LISTEN_ADDRESS: 0.0.0.0
     stdin_open: true
     tty: true
-    restart: unless-stopped
-    depends_on:
-      - appwrite
-
-  appwrite:
-    image: appwrite/appwrite:1.5
-    container_name: appwrite
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      _APP_ENV: development
-      _APP_OPENSSL_KEY_V1: your-secure-key
-      _APP_WORKER_PER_CORE: 1
-    volumes:
-      - appwrite_data:/storage
-      - appwrite_certificates:/certificates
-    restart: unless-stopped
-
-volumes:
-  appwrite_data:
-  appwrite_certificates:

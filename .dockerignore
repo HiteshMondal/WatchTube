@@ -1,7 +1,7 @@
 node_modules
-.expo
-.vscode
 .git
-*.log
-*.md
+.vscode
+.expo
+.DS_Store
 .env
+*.log
