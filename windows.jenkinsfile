@@ -17,9 +17,9 @@ pipeline {
       steps {
         script {
           withCredentials([file(credentialsId: 'watchtube-env', variable: 'ENV_FILE')]) {
-            sh """
-              cp \$ENV_FILE .env
-              docker build -t \$IMAGE_NAME:\$IMAGE_TAG .
+            bat """
+              copy "%ENV_FILE%" .env
+              docker build -t %IMAGE_NAME%:%IMAGE_TAG% .
             """
           }
         }
@@ -30,27 +30,30 @@ pipeline {
       steps {
         script {
           withCredentials([usernamePassword(credentialsId: 'dockerhub-creds-id', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-            sh """
-              docker login -u \$DOCKER_USER -p \$DOCKER_PASS
-              docker push \$IMAGE_NAME:\$IMAGE_TAG
+            bat """
+              docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+              docker push %IMAGE_NAME%:%IMAGE_TAG%
             """
           }
         }
       }
     }
 
-    stage('Deploy to Kubernetes') {
-      steps {
-        script {
-          withCredentials([file(credentialsId: 'kubeconfig-id', variable: 'KUBECONFIG')]) {
-            sh """
-              kubectl --kubeconfig=\$KUBECONFIG config current-context
-              kubectl --kubeconfig=\$KUBECONFIG get nodes
-              kubectl --kubeconfig=\$KUBECONFIG set image deployment/watchtube-deployment watchtube=\$IMAGE_NAME:\$IMAGE_TAG --namespace=default
-            """
-          }
-        }
+stage('Deploy to Kubernetes') {
+  steps {
+    script {
+      withCredentials([file(credentialsId: 'kubeconfig-id', variable: 'KUBECONFIG')]) {
+        bat """
+          kubectl --kubeconfig=%KUBECONFIG% config current-context
+          kubectl --kubeconfig=%KUBECONFIG% get nodes
+          kubectl --kubeconfig=%KUBECONFIG% set image deployment/watchtube-deployment watchtube=${IMAGE_NAME}:${IMAGE_TAG} --namespace=default
+        """
       }
     }
+  }
+}
+
+
+
   }
 }
